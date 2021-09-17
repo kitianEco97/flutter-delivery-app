@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "576145547378",
+    "project_id": "delivery-app-udemy-dc6b5",
+    "storage_bucket": "delivery-app-udemy-dc6b5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576145547378:android:b30589c851f12921b0e2eb",
+        "android_client_info": {
+          "package_name": "org.mosainfo.uber_clone_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "576145547378-p7farq30ugt904qfbqv44gl3s8jur2kl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbKNJ76k85yPZoxACPPenWK-ljFADo2UQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "576145547378-p7farq30ugt904qfbqv44gl3s8jur2kl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
