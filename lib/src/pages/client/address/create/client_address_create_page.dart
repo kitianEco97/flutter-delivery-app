@@ -33,9 +33,9 @@ class _ClientAddressCreatePageState extends State<ClientAddressCreatePage> {
       body: Column(
         children: [
           _textCompleteData(),
+          _textFieldRefPoint(),
           _textFieldAddress(),
           _textFieldNeighborhood(),
-          _textFieldRefPoint()
         ],
       ),
       bottomNavigationBar: _buttonAccept(),

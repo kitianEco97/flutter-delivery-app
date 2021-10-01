@@ -53,7 +53,6 @@ class ClientAddressCreateController {
     if (responseApi.success) {
       address.id = responseApi.data;
       _sharedPref.save('address', address);
-
       Fluttertoast.showToast(msg: responseApi.message);
       Navigator.pop(context, true);
     }

@@ -20,19 +20,24 @@ class Address {
   String neighborhood;
   double lat;
   double lng;
+  List<Address> toList = [];
 
   factory Address.fromJson(Map<String, dynamic> json) => Address(
         id: json["id"] is int ? json['id'].toString() : json['id'],
         idUser: json["id_user"],
         address: json["address"],
         neighborhood: json["neighborhood"],
-        lat: json["lat"] is String
-            ? double.parse(json["lat"])
-            : json["lat"].toDouble(),
-        lng: json["lng"] is String
-            ? double.parse(json["lng"])
-            : json["lng"].toDouble(),
+        lat: json["lat"] is String ? double.parse(json["lat"]) : json["lat"],
+        lng: json["lng"] is String ? double.parse(json["lng"]) : json["lng"],
       );
+
+  Address.fromJsonList(List<dynamic> jsonList) {
+    if (jsonList == null) return;
+    jsonList.forEach((item) {
+      Address address = Address.fromJson(item);
+      toList.add(address);
+    });
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
