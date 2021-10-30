@@ -5,12 +5,11 @@ import 'package:uber_clone_flutter/src/models/product.dart';
 import 'package:uber_clone_flutter/src/models/response_api.dart';
 import 'package:uber_clone_flutter/src/models/user.dart';
 import 'package:uber_clone_flutter/src/provider/orders_provider.dart';
-import 'package:uber_clone_flutter/src/provider/push_notification_provider.dart';
 import 'package:uber_clone_flutter/src/provider/users_provider.dart';
 import 'package:uber_clone_flutter/src/utils/my_snackbar.dart';
 import 'package:uber_clone_flutter/src/utils/shared_pref.dart';
 
-class RestaurantOrdersDetailController {
+class DeliveryOrdersDetailController {
   BuildContext context;
   Function refresh;
 
@@ -30,9 +29,6 @@ class RestaurantOrdersDetailController {
   OrdersProvider _ordersProvider = new OrdersProvider();
   String idDelivery;
 
-  PushNotificationsProvider pushNotificationsProvider =
-      new PushNotificationsProvider();
-
   Future init(BuildContext context, Function refresh, Order order) async {
     this.context = context;
     this.refresh = refresh;
@@ -45,29 +41,18 @@ class RestaurantOrdersDetailController {
     refresh();
   }
 
-  void sendNotification(String tokenDelivery) {
-    Map<String, dynamic> data = {'click_action': 'FLUTTER_NOTIFICATION_CLICK'};
-    pushNotificationsProvider.sendMessage(
-        tokenDelivery, data, 'PEDIDO ASIGNADO', 'Te han asignado un pedido');
-  }
-
   void updateOrder() async {
-    if (idDelivery != null) {
-      order.idDelivery = idDelivery;
-      ResponseApi responseApi = await _ordersProvider.updateToDispatched(order);
-
-      User deliveryUser = await _usersProvider.getById(order.idDelivery);
-      print(
-          'TOKEN DE NOTIFICACION DEL DELIVERY: ${deliveryUser.notificationToken}');
-
-      sendNotification(deliveryUser.notificationToken);
-
+    if (order.status == 'DESPACHADO') {
+      ResponseApi responseApi = await _ordersProvider.updateToOnTheWay(order);
       Fluttertoast.showToast(
           msg: responseApi.message, toastLength: Toast.LENGTH_LONG);
-      Navigator.pop(context, true);
-      //MySnackbar.show(context, responseApi.message);
+      if (responseApi.success) {
+        Navigator.pushNamed(context, 'delivery/orders/map',
+            arguments: order.toJson());
+      }
     } else {
-      Fluttertoast.showToast(msg: 'Selecciona el repartidor');
+      Navigator.pushNamed(context, 'delivery/orders/map',
+          arguments: order.toJson());
     }
   }
 

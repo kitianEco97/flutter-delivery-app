@@ -3,25 +3,23 @@ import 'package:flutter/scheduler.dart';
 import 'package:uber_clone_flutter/src/models/order.dart';
 import 'package:uber_clone_flutter/src/models/product.dart';
 import 'package:uber_clone_flutter/src/models/user.dart';
-import 'package:uber_clone_flutter/src/pages/restaurant/orders/detail/restaurant_orders_detail_controller.dart';
+import 'package:uber_clone_flutter/src/pages/delivery/orders/detail/delivery_orders_detail_controller.dart';
 import 'package:uber_clone_flutter/src/utils/my_colors.dart';
 import 'package:uber_clone_flutter/src/utils/relative_time_util.dart';
 import 'package:uber_clone_flutter/src/widgets/no_data_widget.dart';
 
-class RestaurantOrdersDetailPage extends StatefulWidget {
+class DeliveryOrdersDetailPage extends StatefulWidget {
   Order order;
 
-  RestaurantOrdersDetailPage({Key key, @required this.order}) : super(key: key);
+  DeliveryOrdersDetailPage({Key key, @required this.order}) : super(key: key);
 
   @override
-  _RestaurantOrdersDetailPageState createState() =>
-      _RestaurantOrdersDetailPageState();
+  _DeliveryOrdersDetailPageState createState() =>
+      _DeliveryOrdersDetailPageState();
 }
 
-class _RestaurantOrdersDetailPageState
-    extends State<RestaurantOrdersDetailPage> {
-  RestaurantOrdersDetailController _con =
-      new RestaurantOrdersDetailController();
+class _DeliveryOrdersDetailPageState extends State<DeliveryOrdersDetailPage> {
+  DeliveryOrdersDetailController _con = new DeliveryOrdersDetailController();
 
   @override
   void initState() {
@@ -49,7 +47,7 @@ class _RestaurantOrdersDetailPageState
           ],
         ),
         bottomNavigationBar: Container(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.of(context).size.height * 0.4,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -59,12 +57,6 @@ class _RestaurantOrdersDetailPageState
                   indent: 30, // MARGEN EN LA PARTE IZQUIERDA
                 ),
                 SizedBox(height: 10),
-                _textDescription(),
-                SizedBox(height: 15),
-                _con.order.status != 'PAGADO' ? _deliveryData() : Container(),
-                _con.order.status == 'PAGADO'
-                    ? _dropDown(_con.users)
-                    : Container(),
                 _textData('Cliente:',
                     '${_con.order?.client?.name ?? ''} ${_con.order?.client?.lastname ?? ''}'),
                 _textData(
@@ -72,7 +64,7 @@ class _RestaurantOrdersDetailPageState
                 _textData('Fecha de pedido:',
                     '${RelativeTimeUtil.getRelativeTime(_con.order?.timestamp ?? 0)}'),
                 //_textTotalPrice(),
-                _con.order.status == 'PAGADO' ? _buttonNext() : Container()
+                _con.order.status != 'ENTREGADO' ? _buttonNext() : Container()
               ],
             ),
           ),
@@ -90,125 +82,6 @@ class _RestaurantOrdersDetailPageState
               ));
   }
 
-  Widget _textDescription() {
-    return Container(
-      alignment: Alignment.centerLeft,
-      margin: EdgeInsets.symmetric(horizontal: 30),
-      child: Text(
-        _con.order == 'PAGADO' ? 'Asignar repartidor' : 'Repartidor asignado',
-        style: TextStyle(
-            fontStyle: FontStyle.italic,
-            color: MyColors.primaryColor,
-            fontSize: 16),
-      ),
-    );
-  }
-
-  Widget _dropDown(List<User> users) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-      child: Material(
-        elevation: 2.0,
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(5)),
-        child: Container(
-          padding: EdgeInsets.all(0),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: DropdownButton(
-                  underline: Container(
-                    alignment: Alignment.centerRight,
-                    child: Icon(
-                      Icons.arrow_drop_down_circle,
-                      color: MyColors.primaryColor,
-                    ),
-                  ),
-                  elevation: 3,
-                  isExpanded: true,
-                  hint: Text(
-                    'Repartidores',
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
-                  ),
-                  items: _dropDownItems(users),
-                  value: _con.idDelivery,
-                  onChanged: (option) {
-                    setState(() {
-                      print('Reparidor selecciondo $option');
-                      _con.idDelivery =
-                          option; // ESTABLECIENDO EL VALOR SELECCIONADO
-                    });
-                  },
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _deliveryData() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 30),
-      child: Row(
-        children: [
-          Container(
-            height: 40,
-            width: 40,
-            margin: EdgeInsets.only(top: 20),
-            child: FadeInImage(
-              image: _con.order.delivery?.image != null
-                  ? NetworkImage(_con.order.delivery?.image)
-                  : AssetImage('assets/img/no-image.png'),
-              fit: BoxFit.cover,
-              fadeInDuration: Duration(milliseconds: 50),
-              placeholder: AssetImage('assets/img/no-image.png'),
-            ),
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          Text(
-              '${_con.order.delivery?.name ?? ''} ${_con.order.delivery?.lastname ?? ''}')
-        ],
-      ),
-    );
-  }
-
-  List<DropdownMenuItem<String>> _dropDownItems(List<User> users) {
-    List<DropdownMenuItem<String>> list = [];
-    users.forEach((user) {
-      list.add(DropdownMenuItem(
-        child: Row(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              margin: EdgeInsets.only(top: 20),
-              child: FadeInImage(
-                image: user.image != null
-                    ? NetworkImage(user.image)
-                    : AssetImage('assets/img/no-image.png'),
-                fit: BoxFit.cover,
-                fadeInDuration: Duration(milliseconds: 50),
-                placeholder: AssetImage('assets/img/no-image.png'),
-              ),
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Text(user.name)
-          ],
-        ),
-        value: user.id,
-      ));
-    });
-
-    return list;
-  }
-
   Widget _textData(String title, String content) {
     return Container(
         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -224,7 +97,8 @@ class _RestaurantOrdersDetailPageState
       child: ElevatedButton(
         onPressed: _con.updateOrder,
         style: ElevatedButton.styleFrom(
-            primary: MyColors.primaryColor,
+            primary:
+                _con.order?.status == 'DESPACHADO' ? Colors.blue : Colors.green,
             padding: EdgeInsets.symmetric(vertical: 5),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12))),
@@ -233,14 +107,13 @@ class _RestaurantOrdersDetailPageState
             Align(
               alignment: Alignment.center,
               child: Container(
-                alignment: Alignment.center,
                 height: 40,
+                alignment: Alignment.center,
                 child: Text(
-                  'DESPACHAR ORDEN',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  _con.order?.status == 'DESPACHADO'
+                      ? 'INICIAR ENTREGA'
+                      : 'IR AL MAPA',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -250,7 +123,7 @@ class _RestaurantOrdersDetailPageState
                 margin: EdgeInsets.only(left: 50, top: 3),
                 height: 30,
                 child: Icon(
-                  Icons.check_circle,
+                  Icons.directions_car,
                   color: Colors.white,
                   size: 30,
                 ),

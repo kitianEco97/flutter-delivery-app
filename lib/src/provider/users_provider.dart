@@ -47,6 +47,54 @@ class UsersProvider {
     }
   }
 
+  Future<List<User>> getDeliveryMen() async {
+    try {
+      Uri url = Uri.http(_url, '$_api/findDeliveryMen');
+      Map<String, String> headers = {
+        'Content-type': 'application/json',
+        'Authorization': sessionUser.sessionToken
+      };
+      final res = await http.get(url, headers: headers);
+
+      if (res.statusCode == 401) {
+        // NO AUTORIZADO
+        Fluttertoast.showToast(msg: 'Tu sesion expiro');
+        new SharedPref().logout(context, sessionUser.id);
+      }
+
+      final data = json.decode(res.body);
+      User user = User.fromJsonList(data);
+      return user.toList;
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
+
+  Future<List<String>> getAdminsNotificationTokens() async {
+    try {
+      Uri url = Uri.http(_url, '$_api/api/users/getAdminsNotificationTokens');
+      Map<String, String> headers = {
+        'Content-type': 'application/json',
+        'Authorization': sessionUser.sessionToken
+      };
+      final res = await http.get(url, headers: headers);
+
+      if (res.statusCode == 401) {
+        // NO AUTORIZADO
+        Fluttertoast.showToast(msg: 'Tu sesion expiro');
+        new SharedPref().logout(context, sessionUser.id);
+      }
+
+      final data = json.decode(res.body);
+      final tokens = List<String>.from(data);
+      return tokens;
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
+
   Future<Stream> createWithImage(User user, File image) async {
     try {
       Uri url = Uri.http(_url, '$_api/create');
@@ -102,6 +150,33 @@ class UsersProvider {
         'Content-type': 'application/json',
       };
       final res = await http.post(url, headers: headers, body: bodyParams);
+      final data = json.decode(res.body);
+      ResponseApi responseApi = ResponseApi.fromJson(data);
+      return await responseApi;
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
+
+  Future<ResponseApi> updateNotificationToken(
+      String idUser, String token) async {
+    try {
+      Uri url = Uri.http(_url, '$_api/updateNotificationToken');
+      String bodyParams =
+          json.encode({'id': idUser, 'notification_token': token});
+      Map<String, String> headers = {
+        'Content-type': 'application/json',
+        'Authorization': sessionUser.sessionToken
+      };
+      final res = await http.put(url, headers: headers, body: bodyParams);
+
+      if (res.statusCode == 401) {
+        // NO AUTHORIZED
+        Fluttertoast.showToast(msg: 'Tu sesión expiro');
+        new SharedPref().logout(context, sessionUser.id);
+      }
+
       final data = json.decode(res.body);
       ResponseApi responseApi = ResponseApi.fromJson(data);
       return await responseApi;

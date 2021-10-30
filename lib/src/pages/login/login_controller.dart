@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:uber_clone_flutter/src/models/response_api.dart';
 import 'package:uber_clone_flutter/src/models/user.dart';
+import 'package:uber_clone_flutter/src/provider/push_notification_provider.dart';
 import 'package:uber_clone_flutter/src/provider/users_provider.dart';
 import 'package:uber_clone_flutter/src/utils/my_snackbar.dart';
 import 'package:uber_clone_flutter/src/utils/shared_pref.dart';
@@ -14,6 +15,9 @@ class LoginController {
   UsersProvider usersProvider = new UsersProvider();
   SharedPref _sharedPref = new SharedPref();
 
+  PushNotificationsProvider pushNotificationsProvider =
+      new PushNotificationsProvider();
+
   Future init(BuildContext context) async {
     this.context = context;
     await usersProvider.init(context);
@@ -21,6 +25,8 @@ class LoginController {
     User user = User.fromJson(await _sharedPref.read('user') ?? {});
 
     if (user?.sessionToken != null) {
+      pushNotificationsProvider.saveToken(user, context);
+
       if (user.roles.length > 1) {
         Navigator.pushNamedAndRemoveUntil(context, 'roles', (route) => false);
       } else {
@@ -45,6 +51,7 @@ class LoginController {
     if (responseApi.success) {
       User user = User.fromJson(responseApi.data);
       _sharedPref.save('user', user.toJson());
+      pushNotificationsProvider.saveToken(user, context);
       //pushNotificationsProvider.saveToken(user.id);
       print('USUARIO LOGEADO: ${user.toJson()}');
       if (user.roles.length > 1) {

@@ -62,31 +62,37 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
             ),
           ),
           drawer: _drawer(),
-          body: TabBarView(
-            children: _con.categories.map((Category category) {
-              return FutureBuilder(
-                  future: _con.getProducts(category.id),
-                  builder: (context, AsyncSnapshot<List<Product>> snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.length > 0) {
-                        return GridView.builder(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 20),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2, childAspectRatio: 0.7),
-                            itemCount: snapshot.data?.length ?? 0,
-                            itemBuilder: (_, index) {
-                              return _cardProduct(snapshot.data[index]);
-                            });
-                      } else {
-                        return NoDataWidget(text: 'No hay productos');
-                      }
-                    } else {
-                      return NoDataWidget(text: 'No hay productos');
-                    }
-                  });
-            }).toList(),
+          body: Center(
+            child: Container(
+              child: TabBarView(
+                children: _con.categories.map((Category category) {
+                  return FutureBuilder(
+                      future: _con.getProducts(category.id, _con.productName),
+                      builder:
+                          (context, AsyncSnapshot<List<Product>> snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data.length > 0) {
+                            return GridView.builder(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 20),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 0.7),
+                                itemCount: snapshot.data?.length ?? 0,
+                                itemBuilder: (_, index) {
+                                  return _cardProduct(snapshot.data[index]);
+                                });
+                          } else {
+                            return NoDataWidget(text: 'No hay productos');
+                          }
+                        } else {
+                          return NoDataWidget(text: 'No hay productos');
+                        }
+                      });
+                }).toList(),
+              ),
+            ),
           )),
     );
   }
@@ -194,6 +200,7 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       child: TextField(
+          onChanged: _con.onChangeText,
           decoration: InputDecoration(
               hintText: 'Buscar',
               suffixIcon: Icon(
@@ -281,6 +288,7 @@ class _ClientProductsListPageState extends State<ClientProductsListPage> {
             trailing: Icon(Icons.edit_outlined),
           ),
           ListTile(
+            onTap: _con.goToOrdersList,
             title: Text('Mis pedidos'),
             trailing: Icon(Icons.shopping_cart_outlined),
           ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:http/http.dart';
 import 'package:uber_clone_flutter/src/models/address.dart';
 import 'package:uber_clone_flutter/src/models/product.dart';
 import 'package:uber_clone_flutter/src/models/user.dart';
@@ -20,6 +21,7 @@ class Order {
   List<Product> products = [];
   List<Order> toList = [];
   User client;
+  User delivery;
   Address address;
 
   Order(
@@ -33,6 +35,7 @@ class Order {
       this.timestamp,
       this.products,
       this.client,
+      this.delivery,
       this.address});
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
@@ -47,16 +50,25 @@ class Order {
           ? int.parse(json["timestamp"])
           : json["timestamp"],
       products: json["products"] != null
-          ? List<Product>.from(
-                  json["products"].map((model) => Product.fromJson(model))) ??
+          ? List<Product>.from(json["products"].map((model) =>
+                  model is Product ? model : Product.fromJson(model))) ??
               []
           : [],
       client: json['client'] is String
           ? userFromJson(json['client'])
-          : User.fromJson(json['client'] ?? {}),
+          : json['client'] is User
+              ? json['client']
+              : User.fromJson(json['client'] ?? {}),
+      delivery: json['delivery'] is String
+          ? userFromJson(json['delivery'])
+          : json['delivery'] is User
+              ? json['delivery']
+              : User.fromJson(json['delivery'] ?? {}),
       address: json['address'] is String
           ? addressFromJson(json['address'])
-          : Address.fromJson(json['address'] ?? {}));
+          : json['address'] is Address
+              ? json['address']
+              : Address.fromJson(json['address'] ?? {}));
 
   Order.fromJsonList(List<dynamic> jsonList) {
     if (jsonList == null) return;
@@ -77,6 +89,7 @@ class Order {
         "timestamp": timestamp,
         "products": products,
         "client": client,
+        "delivery": delivery,
         "address": address,
       };
 }

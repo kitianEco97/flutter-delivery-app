@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:uber_clone_flutter/src/models/order.dart';
 import 'package:uber_clone_flutter/src/models/user.dart';
+import 'package:uber_clone_flutter/src/pages/client/orders/detail/client_orders_detail_page.dart';
 import 'package:uber_clone_flutter/src/pages/delivery/orders/detail/delivery_orders_detail_page.dart';
 import 'package:uber_clone_flutter/src/provider/orders_provider.dart';
 import 'package:uber_clone_flutter/src/utils/shared_pref.dart';
 
-class DeliveryOrdersListController {
+class ClientOrdersListController {
   BuildContext context;
   SharedPref _sharedPref = new SharedPref();
   GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
   Function refresh;
   User user;
 
-  List<String> status = ['DESPACHADO', 'EN CAMINO', 'ENTREGADO'];
+  List<String> status = ['PAGADO', 'DESPACHADO', 'EN CAMINO', 'ENTREGADO'];
   OrdersProvider _ordersProvider = new OrdersProvider();
 
   bool isUpdated;
@@ -27,13 +28,13 @@ class DeliveryOrdersListController {
   }
 
   Future<List<Order>> getOrders(String status) async {
-    return await _ordersProvider.getByDeliveryAndStatus(user.id, status);
+    return await _ordersProvider.getByClientAndStatus(user.id, status);
   }
 
   void openBottonsheet(Order order) async {
     isUpdated = await showMaterialModalBottomSheet(
         context: context,
-        builder: (context) => DeliveryOrdersDetailPage(order: order));
+        builder: (context) => ClientOrdersDetailPage(order: order));
     if (isUpdated) {
       refresh();
     }
